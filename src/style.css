@@ -260,6 +260,69 @@ body {
 
 .topbar-actions { display: flex; gap: 8px; align-items: center; }
 
+/* ── Pod setup banner (owner, optional ACL wizard) ─────────────────────── */
+.pod-setup-banner {
+  margin: 0 20px 12px;
+  padding: 12px 14px;
+  background: #fefce8;
+  border: 1px solid #fde047;
+  border-radius: var(--radius);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.pod-setup-inner { display: flex; flex-direction: column; gap: 10px; }
+
+.pod-setup-text {
+  color: var(--text);
+}
+
+.pod-setup-text code {
+  font-size: 12px;
+  background: rgba(0, 0, 0, 0.05);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.pod-setup-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+#pod-setup-btn {
+  padding: 8px 16px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#pod-setup-btn:hover { opacity: 0.92; }
+#pod-setup-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.pod-setup-dismiss {
+  padding: 8px 12px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.pod-setup-dismiss:hover { background: var(--bg); }
+
+.pod-setup-status {
+  font-size: 12px;
+  color: var(--muted);
+  min-height: 1.2em;
+}
+
 .notif-btn {
   position: relative;
   background: none;

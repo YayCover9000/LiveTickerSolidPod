@@ -65,6 +65,20 @@
           </div>
         </header>
 
+        <div id="pod-setup-banner" class="pod-setup-banner hidden" role="status">
+          <div class="pod-setup-inner">
+            <p class="pod-setup-text">
+              <strong>Pod für den Ticker einrichten</strong>
+              — Legt <code>/ticker/messages/</code> an und setzt öffentlichen Lese- und Schreibzugriff (nur für diesen Demo-Pod gedacht).
+            </p>
+            <div class="pod-setup-actions">
+              <button type="button" id="pod-setup-btn">Pod einrichten</button>
+              <button type="button" id="pod-setup-dismiss" class="pod-setup-dismiss">Später</button>
+            </div>
+            <p id="pod-setup-status" class="pod-setup-status" aria-live="polite"></p>
+          </div>
+        </div>
+
         <!-- Notification panel (dropdown) -->
         <div id="notif-panel" class="notif-panel hidden">
           <div class="notif-panel-header">

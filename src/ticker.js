@@ -1,5 +1,12 @@
 import { initAuth, solidLogin, solidLogout, getSession } from './auth.js';
 import { saveMessage } from './pod.js';
+import {
+  canRunPodSetup,
+  isSetupMarkedDone,
+  markSetupDone,
+  messagesArePublicReady,
+  setupPodPublicWrite,
+} from './podSetup.js';
 
 // ── State ────────────────────────────────────────────────────────────────────
 let podUrl = '';
@@ -29,6 +36,10 @@ const notifList      = $('notif-list');
 const notifCount     = $('notif-count');
 const collectionList = $('collections-list');
 const tickerTitle    = $('ticker-title');
+const podSetupBanner = $('pod-setup-banner');
+const podSetupBtn    = $('pod-setup-btn');
+const podSetupDismiss = $('pod-setup-dismiss');
+const podSetupStatus = $('pod-setup-status');
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -131,6 +142,38 @@ function renderMessage(msg) {
 
 function scrollToBottom() {
   messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+async function refreshPodSetupBanner() {
+  if (!podUrl || !currentUserWebId || !podSetupBanner) return;
+
+  podSetupBanner.classList.add('hidden');
+  if (podSetupStatus) podSetupStatus.textContent = '';
+
+  if (isSetupMarkedDone(podUrl)) return;
+  if (sessionStorage.getItem('solid-ticker:pod-setup-dismiss') === '1') return;
+
+  const session = getSession();
+  if (!session.info.isLoggedIn) return;
+
+  try {
+    if (await messagesArePublicReady(podUrl, session.fetch)) {
+      markSetupDone(podUrl);
+      return;
+    }
+  } catch {
+    /* keep going — offer manual setup */
+  }
+
+  let allowed;
+  try {
+    allowed = await canRunPodSetup(currentUserWebId, podUrl, session.fetch);
+  } catch {
+    return;
+  }
+  if (!allowed) return;
+
+  podSetupBanner.classList.remove('hidden');
 }
 
 // ── Ingesting messages ───────────────────────────────────────────────────────
@@ -288,6 +331,40 @@ notifClose.addEventListener('click', () => {
   notifPanel.classList.add('hidden');
 });
 
+if (podSetupBtn && podSetupStatus) {
+  podSetupBtn.addEventListener('click', async () => {
+    const session = getSession();
+    if (!session.info.isLoggedIn || !podUrl || !currentUserWebId) return;
+
+    podSetupBtn.disabled = true;
+    podSetupStatus.textContent = 'Einrichten…';
+
+    try {
+      await setupPodPublicWrite({
+        podUrl,
+        ownerWebId: currentUserWebId,
+        fetchFn: session.fetch,
+      });
+      markSetupDone(podUrl);
+      podSetupStatus.textContent = 'Fertig.';
+      podSetupBanner?.classList.add('hidden');
+    } catch (err) {
+      console.error('[pod-setup]', err);
+      podSetupStatus.textContent =
+        err instanceof Error ? err.message : 'Einrichten ist fehlgeschlagen.';
+    } finally {
+      podSetupBtn.disabled = false;
+    }
+  });
+}
+
+if (podSetupDismiss) {
+  podSetupDismiss.addEventListener('click', () => {
+    sessionStorage.setItem('solid-ticker:pod-setup-dismiss', '1');
+    podSetupBanner?.classList.add('hidden');
+  });
+}
+
 // Close notification panel on outside click
 document.addEventListener('click', (e) => {
   if (!notifPanel.contains(e.target) && e.target !== notifBtn) {
@@ -379,6 +456,7 @@ async function init() {
     tickerScreen.classList.remove('hidden');
 
     connectSSE();
+    await refreshPodSetupBanner();
   } else {
     loginScreen.classList.remove('hidden');
     tickerScreen.classList.add('hidden');
