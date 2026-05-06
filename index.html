@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Live Ticker — Solid Pod</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌐</text></svg>" />
+</head>
+<body>
+  <div id="app">
+
+    <!-- ── Login screen ── -->
+    <div id="login-screen" class="screen">
+      <div class="login-card">
+        <div class="login-logo">🌐</div>
+        <h1>Solid Ticker</h1>
+        <p>Live-Chat, gespeichert auf deinem Solid Pod</p>
+        <label for="oidc-issuer">Pod-Anbieter</label>
+        <input
+          id="oidc-issuer"
+          type="url"
+          placeholder="https://solidcommunity.net"
+          value="https://solidcommunity.net"
+        />
+        <button id="login-btn">Mit Solid anmelden</button>
+        <p class="login-hint">Du wirst zu deinem Pod-Anbieter weitergeleitet.</p>
+      </div>
+    </div>
+
+    <!-- ── Main app ── -->
+    <div id="ticker-screen" class="screen hidden">
+
+      <!-- Sidebar -->
+      <aside id="sidebar">
+        <div class="sidebar-header">
+          <span class="sidebar-logo">🌐</span>
+          <span class="sidebar-title">Solid Ticker</span>
+        </div>
+
+        <div class="sidebar-section-label">Sammlungen</div>
+        <ul id="collections-list">
+          <li class="collection active" data-filter="all">
+            <span class="collection-icon">💬</span> Alle Nachrichten
+          </li>
+        </ul>
+
+        <div class="sidebar-footer">
+          <div class="sidebar-user">
+            <span class="user-avatar">👤</span>
+            <span id="user-name" class="user-name-text"></span>
+          </div>
+          <button id="logout-btn" title="Abmelden">↩</button>
+        </div>
+      </aside>
+
+      <!-- Main panel -->
+      <main id="main">
+        <header id="topbar">
+          <h1 id="ticker-title">Alle Nachrichten</h1>
+          <div class="topbar-actions">
+            <button id="notif-btn" class="notif-btn" title="Erwähnungen">
+              🔔
+              <span id="notif-count" class="notif-badge hidden">0</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- Notification panel (dropdown) -->
+        <div id="notif-panel" class="notif-panel hidden">
+          <div class="notif-panel-header">
+            <span>Erwähnungen</span>
+            <button id="notif-close">✕</button>
+          </div>
+          <ul id="notif-list"></ul>
+        </div>
+
+        <!-- Message list -->
+        <div id="messages"></div>
+
+        <!-- Compose bar -->
+        <form id="message-form">
+          <div class="input-wrapper">
+            <input
+              id="message-input"
+              type="text"
+              placeholder="Nachricht schreiben… @name zum Taggen"
+              autocomplete="off"
+              maxlength="1000"
+            />
+            <div id="mention-dropdown" class="mention-dropdown hidden"></div>
+          </div>
+          <button type="submit" id="send-btn">Senden</button>
+        </form>
+      </main>
+
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
